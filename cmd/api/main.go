@@ -10,6 +10,15 @@
 // exposes that to an internal admin dashboard. It owns no customer PII
 // beyond what it syncs read-only from AlefGym, and never writes back to
 // AlefGym.
+//
+//	@title			Centropy Affiliate Admin API
+//	@version		1.0
+//	@description	Admin API for the AlefGym loyalty-club dashboard: customer segmentation, complaint verification, renewal tracking, and AI-assisted analysis.
+//	@BasePath		/api/v1
+//	@securityDefinitions.apikey	BearerAuth
+//	@in							header
+//	@name						Authorization
+//	@description				Type "Bearer" followed by a space and the JWT from /auth/login.
 package main
 
 import (

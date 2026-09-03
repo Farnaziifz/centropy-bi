@@ -8,7 +8,9 @@ import (
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 
+	_ "centropy-affilate/docs"
 	"centropy-affilate/internal/interfaces/http/handler"
 	appmiddleware "centropy-affilate/internal/interfaces/http/middleware"
 	"centropy-affilate/pkg/cqrs"
@@ -43,6 +45,7 @@ func NewRouter(deps Deps) http.Handler {
 	}))
 
 	r.Get("/healthz", handler.Health)
+	r.Get("/swagger/*", httpSwagger.WrapHandler)
 
 	authHandler := handler.NewAuthHandler(deps.Bus)
 	segmentHandler := handler.NewSegmentHandler(deps.Bus)

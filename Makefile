@@ -1,4 +1,4 @@
-.PHONY: run build generate fmt vet test up down restart
+.PHONY: run build generate swagger fmt vet test up down restart
 
 run:
 	go run ./cmd/api
@@ -19,6 +19,9 @@ build:
 
 generate:
 	cd ent && go generate ./...
+
+swagger:
+	swag init -g cmd/api/main.go -o docs --parseDependency --parseInternal
 
 fmt:
 	gofmt -w .

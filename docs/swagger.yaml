@@ -1,0 +1,592 @@
+basePath: /api/v1
+definitions:
+  centropy-affilate_internal_application_analysis_command.RunDailyAnalysisResult:
+    properties:
+      analyzed:
+        type: integer
+      candidates:
+        type: integer
+      failed:
+        type: integer
+      skipped:
+        type: integer
+    type: object
+  centropy-affilate_internal_application_analysis_query.OverdueWithAnalysis:
+    properties:
+      AnalyzedAt:
+        type: string
+      Category:
+        $ref: '#/definitions/centropy-affilate_internal_domain_analysis.Category'
+      Confidence:
+        type: string
+      Summary:
+        type: string
+      completedOrdersTotal:
+        type: integer
+      daysSinceLastProgram:
+        type: integer
+      externalUserID:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      lastProgramAt:
+        type: string
+      phone:
+        type: string
+    type: object
+  centropy-affilate_internal_application_auth_command.LoginResult:
+    properties:
+      expiresAt:
+        type: string
+      token:
+        type: string
+    type: object
+  centropy-affilate_internal_application_complaint_command.VerifyDelayedComplaintsResult:
+    properties:
+      candidates:
+        type: integer
+      failed:
+        type: integer
+      skipped:
+        type: integer
+      verified:
+        type: integer
+    type: object
+  centropy-affilate_internal_application_complaint_query.VerifiedComplainer:
+    properties:
+      IsGenuine:
+        type: boolean
+      Reasoning:
+        type: string
+      complaintAt:
+        type: string
+      complaintExcerpt:
+        type: string
+      completedOrdersBefore:
+        type: integer
+      externalUserID:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      phone:
+        type: string
+    type: object
+  centropy-affilate_internal_application_customer_command.SyncCustomersResult:
+    properties:
+      synced:
+        type: integer
+    type: object
+  centropy-affilate_internal_domain_analysis.Category:
+    enum:
+    - PROGRAM_DELAY
+    - PRICE
+    - SUPPORT_QUALITY
+    - TECHNICAL_ISSUE
+    - HEALTH_PERSONAL
+    - LOST_INTEREST
+    - UNCLEAR
+    - NO_MESSAGES
+    type: string
+    x-enum-comments:
+      HealthPersonal: injury, illness, or personal-life reason unrelated to the product
+      LostInterest: no complaint at all, reads as simply gone quiet
+      NoMessages: customer has never sent a single chat/ticket message
+      Price: concerned about cost, asked for discount/installments
+      ProgramDelay: complained their program/diet was late or never arrived
+      SupportQuality: complained support/coach was slow or unhelpful
+      TechnicalIssue: app bugs, upload/playback errors, payment gateway errors
+      Unclear: messages exist but give no clear signal either way
+    x-enum-descriptions:
+    - complained their program/diet was late or never arrived
+    - concerned about cost, asked for discount/installments
+    - complained support/coach was slow or unhelpful
+    - app bugs, upload/playback errors, payment gateway errors
+    - injury, illness, or personal-life reason unrelated to the product
+    - no complaint at all, reads as simply gone quiet
+    - messages exist but give no clear signal either way
+    - customer has never sent a single chat/ticket message
+    x-enum-varnames:
+    - ProgramDelay
+    - Price
+    - SupportQuality
+    - TechnicalIssue
+    - HealthPersonal
+    - LostInterest
+    - Unclear
+    - NoMessages
+  centropy-affilate_internal_domain_complaint.DelayedProgramComplainer:
+    properties:
+      complaintAt:
+        type: string
+      complaintExcerpt:
+        type: string
+      completedOrdersBefore:
+        type: integer
+      externalUserID:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      phone:
+        type: string
+    type: object
+  centropy-affilate_internal_domain_customer.Customer:
+    properties:
+      createdAt:
+        type: string
+      externalUserID:
+        type: string
+      firstName:
+        type: string
+      id:
+        type: string
+      lastName:
+        type: string
+      lastSyncedAt:
+        type: string
+      phone:
+        type: string
+      registeredAt:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  centropy-affilate_internal_domain_renewal.OverdueCustomer:
+    properties:
+      completedOrdersTotal:
+        type: integer
+      daysSinceLastProgram:
+        type: integer
+      externalUserID:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      lastProgramAt:
+        type: string
+      phone:
+        type: string
+    type: object
+  centropy-affilate_internal_domain_segment.Count:
+    properties:
+      count:
+        type: integer
+      segment:
+        $ref: '#/definitions/centropy-affilate_internal_domain_segment.Segment'
+    type: object
+  centropy-affilate_internal_domain_segment.Customer:
+    properties:
+      completedOrders:
+        type: integer
+      externalUserID:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      phone:
+        type: string
+    type: object
+  centropy-affilate_internal_domain_segment.MonthlySignups:
+    properties:
+      count:
+        type: integer
+      month:
+        type: string
+    type: object
+  centropy-affilate_internal_domain_segment.NonPurchaser:
+    properties:
+      externalUserID:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      phone:
+        type: string
+      registeredAt:
+        type: string
+    type: object
+  centropy-affilate_internal_domain_segment.Segment:
+    enum:
+    - NEWCOMER
+    - COLD
+    - HERO
+    - AT_RISK
+    - CHURNED
+    - ONE_TIME
+    type: string
+    x-enum-varnames:
+    - Newcomer
+    - Cold
+    - Hero
+    - AtRisk
+    - Churned
+    - OneTime
+  centropy-affilate_internal_domain_segment.Summary:
+    properties:
+      counts:
+        items:
+          $ref: '#/definitions/centropy-affilate_internal_domain_segment.Count'
+        type: array
+      totalCustomers:
+        type: integer
+    type: object
+  centropy-affilate_internal_interfaces_http_dto.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  centropy-affilate_internal_interfaces_http_dto.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 8
+        type: string
+    required:
+    - email
+    - password
+    type: object
+info:
+  contact: {}
+  description: 'Admin API for the AlefGym loyalty-club dashboard: customer segmentation,
+    complaint verification, renewal tracking, and AI-assisted analysis.'
+  title: Centropy Affiliate Admin API
+  version: "1.0"
+paths:
+  /admin/analysis/overdue:
+    get:
+      description: Overdue-renewal list with whatever AI verdict exists for each customer
+        so far.
+      parameters:
+      - description: minimum days overdue (default 50)
+        in: query
+        name: days
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/centropy-affilate_internal_application_analysis_query.OverdueWithAnalysis'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List overdue renewals with analysis
+      tags:
+      - analysis
+  /admin/analysis/run:
+    post:
+      description: Manually triggers a small, bounded analysis batch (default 5, max
+        50).
+      parameters:
+      - description: batch size, capped at 50
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/centropy-affilate_internal_application_analysis_command.RunDailyAnalysisResult'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Trigger analysis run
+      tags:
+      - analysis
+  /admin/complaints/delayed-program:
+    get:
+      description: Customers who complained about a late program and have bought nothing
+        since.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/centropy-affilate_internal_domain_complaint.DelayedProgramComplainer'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List delayed-program complainers
+      tags:
+      - complaints
+  /admin/complaints/delayed-program/verified:
+    get:
+      description: Delayed-program complaint list with GapGPT's genuine/false-positive
+        verdict, where available.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/centropy-affilate_internal_application_complaint_query.VerifiedComplainer'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List verified complainers
+      tags:
+      - complaints
+  /admin/complaints/delayed-program/verify:
+    post:
+      description: Manually triggers a small, bounded verification batch (default
+        5, max 20).
+      parameters:
+      - description: batch size, capped at 20
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/centropy-affilate_internal_application_complaint_command.VerifyDelayedComplaintsResult'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Trigger complaint verification
+      tags:
+      - complaints
+  /admin/customers:
+    get:
+      description: Returns the locally synced customer directory.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/centropy-affilate_internal_domain_customer.Customer'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List customers
+      tags:
+      - customers
+  /admin/customers/sync:
+    post:
+      description: Pulls the full AlefGym user directory into the local Customer table.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/centropy-affilate_internal_application_customer_command.SyncCustomersResult'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Sync customers from AlefGym
+      tags:
+      - customers
+  /admin/renewals/overdue:
+    get:
+      description: Customers whose last delivered program is older than the given
+        days, with zero completed orders since.
+      parameters:
+      - description: minimum days overdue (default 50)
+        in: query
+        name: days
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/centropy-affilate_internal_domain_renewal.OverdueCustomer'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List overdue renewals
+      tags:
+      - renewals
+  /admin/segments:
+    get:
+      description: Six-segment breakdown (newcomer/cold/hero/at-risk/churned/one-time)
+        plus total customer count.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/centropy-affilate_internal_domain_segment.Summary'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Segment summary
+      tags:
+      - segments
+  /admin/segments/{segment}/customers:
+    get:
+      description: Every customer currently in one segment.
+      parameters:
+      - description: segment name (newcomer/cold/hero/at-risk/churned/one-time)
+        in: path
+        name: segment
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/centropy-affilate_internal_domain_segment.Customer'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List customers in a segment
+      tags:
+      - segments
+  /admin/segments/non-purchasers:
+    get:
+      description: Every registered customer who has never completed a single order.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/centropy-affilate_internal_domain_segment.NonPurchaser'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List non-purchasers
+      tags:
+      - segments
+  /admin/segments/non-purchasers/monthly:
+    get:
+      description: Per signup month, how many of that month's registrants still have
+        zero completed orders today.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/centropy-affilate_internal_domain_segment.MonthlySignups'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Monthly non-purchaser signups
+      tags:
+      - segments
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates an admin/ops user and returns a bearer token.
+      parameters:
+      - description: credentials
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/centropy-affilate_internal_application_auth_command.LoginResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
+      summary: Admin login
+      tags:
+      - auth
+  /healthz:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Liveness probe
+      tags:
+      - health
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and the JWT from /auth/login.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

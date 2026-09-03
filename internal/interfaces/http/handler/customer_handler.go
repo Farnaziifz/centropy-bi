@@ -20,6 +20,15 @@ func NewCustomerHandler(bus *cqrs.Bus) *CustomerHandler {
 
 // Sync pulls the full AlefGym user directory into the local Customer
 // table. See internal/application/customer/command.SyncCustomersHandler.
+//
+//	@Summary		Sync customers from AlefGym
+//	@Description	Pulls the full AlefGym user directory into the local Customer table.
+//	@Tags			customers
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{object}	customercmd.SyncCustomersResult
+//	@Failure		401	{object}	dto.ErrorResponse
+//	@Router			/admin/customers/sync [post]
 func (h *CustomerHandler) Sync(w http.ResponseWriter, r *http.Request) {
 	result, err := cqrs.ExecuteCommand[customercmd.SyncCustomersCommand, customercmd.SyncCustomersResult](
 		r.Context(), h.bus, customercmd.SyncCustomersCommand{},
@@ -32,6 +41,15 @@ func (h *CustomerHandler) Sync(w http.ResponseWriter, r *http.Request) {
 }
 
 // List returns the locally synced customer directory.
+//
+//	@Summary		List customers
+//	@Description	Returns the locally synced customer directory.
+//	@Tags			customers
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{array}		customer.Customer
+//	@Failure		401	{object}	dto.ErrorResponse
+//	@Router			/admin/customers [get]
 func (h *CustomerHandler) List(w http.ResponseWriter, r *http.Request) {
 	result, err := cqrs.ExecuteQuery[customerquery.ListCustomersQuery, []customer.Customer](
 		r.Context(), h.bus, customerquery.ListCustomersQuery{},

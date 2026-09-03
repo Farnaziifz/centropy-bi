@@ -27,6 +27,16 @@ func NewAnalysisHandler(bus *cqrs.Bus) *AnalysisHandler {
 
 // ListOverdue returns the overdue-renewal list with whatever AI verdict
 // exists for each customer so far.
+//
+//	@Summary		List overdue renewals with analysis
+//	@Description	Overdue-renewal list with whatever AI verdict exists for each customer so far.
+//	@Tags			analysis
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			days	query		int	false	"minimum days overdue (default 50)"
+//	@Success		200		{array}		analysisquery.OverdueWithAnalysis
+//	@Failure		401		{object}	dto.ErrorResponse
+//	@Router			/admin/analysis/overdue [get]
 func (h *AnalysisHandler) ListOverdue(w http.ResponseWriter, r *http.Request) {
 	minDays := 50
 	if raw := r.URL.Query().Get("days"); raw != "" {
@@ -48,6 +58,16 @@ func (h *AnalysisHandler) ListOverdue(w http.ResponseWriter, r *http.Request) {
 // Run manually triggers a small, bounded analysis batch — for testing and
 // for catching up a handful of customers without waiting for the next
 // scheduled daily run.
+//
+//	@Summary		Trigger analysis run
+//	@Description	Manually triggers a small, bounded analysis batch (default 5, max 50).
+//	@Tags			analysis
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			limit	query		int	false	"batch size, capped at 50"
+//	@Success		200		{object}	analysiscmd.RunDailyAnalysisResult
+//	@Failure		401		{object}	dto.ErrorResponse
+//	@Router			/admin/analysis/run [post]
 func (h *AnalysisHandler) Run(w http.ResponseWriter, r *http.Request) {
 	limit := 5
 	if raw := r.URL.Query().Get("limit"); raw != "" {

@@ -1,0 +1,896 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Admin API for the AlefGym loyalty-club dashboard: customer segmentation, complaint verification, renewal tracking, and AI-assisted analysis.",
+        "title": "Centropy Affiliate Admin API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "basePath": "/api/v1",
+    "paths": {
+        "/admin/analysis/overdue": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Overdue-renewal list with whatever AI verdict exists for each customer so far.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "analysis"
+                ],
+                "summary": "List overdue renewals with analysis",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "minimum days overdue (default 50)",
+                        "name": "days",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/centropy-affilate_internal_application_analysis_query.OverdueWithAnalysis"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/analysis/run": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Manually triggers a small, bounded analysis batch (default 5, max 50).",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "analysis"
+                ],
+                "summary": "Trigger analysis run",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "batch size, capped at 50",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/centropy-affilate_internal_application_analysis_command.RunDailyAnalysisResult"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/complaints/delayed-program": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Customers who complained about a late program and have bought nothing since.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "complaints"
+                ],
+                "summary": "List delayed-program complainers",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/centropy-affilate_internal_domain_complaint.DelayedProgramComplainer"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/complaints/delayed-program/verified": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delayed-program complaint list with GapGPT's genuine/false-positive verdict, where available.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "complaints"
+                ],
+                "summary": "List verified complainers",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/centropy-affilate_internal_application_complaint_query.VerifiedComplainer"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/complaints/delayed-program/verify": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Manually triggers a small, bounded verification batch (default 5, max 20).",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "complaints"
+                ],
+                "summary": "Trigger complaint verification",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "batch size, capped at 20",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/centropy-affilate_internal_application_complaint_command.VerifyDelayedComplaintsResult"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/customers": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns the locally synced customer directory.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "customers"
+                ],
+                "summary": "List customers",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/centropy-affilate_internal_domain_customer.Customer"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/customers/sync": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Pulls the full AlefGym user directory into the local Customer table.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "customers"
+                ],
+                "summary": "Sync customers from AlefGym",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/centropy-affilate_internal_application_customer_command.SyncCustomersResult"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/renewals/overdue": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Customers whose last delivered program is older than the given days, with zero completed orders since.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "renewals"
+                ],
+                "summary": "List overdue renewals",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "minimum days overdue (default 50)",
+                        "name": "days",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/centropy-affilate_internal_domain_renewal.OverdueCustomer"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/segments": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Six-segment breakdown (newcomer/cold/hero/at-risk/churned/one-time) plus total customer count.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "segments"
+                ],
+                "summary": "Segment summary",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/centropy-affilate_internal_domain_segment.Summary"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/segments/non-purchasers": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Every registered customer who has never completed a single order.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "segments"
+                ],
+                "summary": "List non-purchasers",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/centropy-affilate_internal_domain_segment.NonPurchaser"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/segments/non-purchasers/monthly": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Per signup month, how many of that month's registrants still have zero completed orders today.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "segments"
+                ],
+                "summary": "Monthly non-purchaser signups",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/centropy-affilate_internal_domain_segment.MonthlySignups"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/segments/{segment}/customers": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Every customer currently in one segment.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "segments"
+                ],
+                "summary": "List customers in a segment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "segment name (newcomer/cold/hero/at-risk/churned/one-time)",
+                        "name": "segment",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/centropy-affilate_internal_domain_segment.Customer"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "description": "Authenticates an admin/ops user and returns a bearer token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Admin login",
+                "parameters": [
+                    {
+                        "description": "credentials",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/centropy-affilate_internal_interfaces_http_dto.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/centropy-affilate_internal_application_auth_command.LoginResult"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/healthz": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "summary": "Liveness probe",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "centropy-affilate_internal_application_analysis_command.RunDailyAnalysisResult": {
+            "type": "object",
+            "properties": {
+                "analyzed": {
+                    "type": "integer"
+                },
+                "candidates": {
+                    "type": "integer"
+                },
+                "failed": {
+                    "type": "integer"
+                },
+                "skipped": {
+                    "type": "integer"
+                }
+            }
+        },
+        "centropy-affilate_internal_application_analysis_query.OverdueWithAnalysis": {
+            "type": "object",
+            "properties": {
+                "AnalyzedAt": {
+                    "type": "string"
+                },
+                "Category": {
+                    "$ref": "#/definitions/centropy-affilate_internal_domain_analysis.Category"
+                },
+                "Confidence": {
+                    "type": "string"
+                },
+                "Summary": {
+                    "type": "string"
+                },
+                "completedOrdersTotal": {
+                    "type": "integer"
+                },
+                "daysSinceLastProgram": {
+                    "type": "integer"
+                },
+                "externalUserID": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "lastProgramAt": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "centropy-affilate_internal_application_auth_command.LoginResult": {
+            "type": "object",
+            "properties": {
+                "expiresAt": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "centropy-affilate_internal_application_complaint_command.VerifyDelayedComplaintsResult": {
+            "type": "object",
+            "properties": {
+                "candidates": {
+                    "type": "integer"
+                },
+                "failed": {
+                    "type": "integer"
+                },
+                "skipped": {
+                    "type": "integer"
+                },
+                "verified": {
+                    "type": "integer"
+                }
+            }
+        },
+        "centropy-affilate_internal_application_complaint_query.VerifiedComplainer": {
+            "type": "object",
+            "properties": {
+                "IsGenuine": {
+                    "type": "boolean"
+                },
+                "Reasoning": {
+                    "type": "string"
+                },
+                "complaintAt": {
+                    "type": "string"
+                },
+                "complaintExcerpt": {
+                    "type": "string"
+                },
+                "completedOrdersBefore": {
+                    "type": "integer"
+                },
+                "externalUserID": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "centropy-affilate_internal_application_customer_command.SyncCustomersResult": {
+            "type": "object",
+            "properties": {
+                "synced": {
+                    "type": "integer"
+                }
+            }
+        },
+        "centropy-affilate_internal_domain_analysis.Category": {
+            "type": "string",
+            "enum": [
+                "PROGRAM_DELAY",
+                "PRICE",
+                "SUPPORT_QUALITY",
+                "TECHNICAL_ISSUE",
+                "HEALTH_PERSONAL",
+                "LOST_INTEREST",
+                "UNCLEAR",
+                "NO_MESSAGES"
+            ],
+            "x-enum-comments": {
+                "HealthPersonal": "injury, illness, or personal-life reason unrelated to the product",
+                "LostInterest": "no complaint at all, reads as simply gone quiet",
+                "NoMessages": "customer has never sent a single chat/ticket message",
+                "Price": "concerned about cost, asked for discount/installments",
+                "ProgramDelay": "complained their program/diet was late or never arrived",
+                "SupportQuality": "complained support/coach was slow or unhelpful",
+                "TechnicalIssue": "app bugs, upload/playback errors, payment gateway errors",
+                "Unclear": "messages exist but give no clear signal either way"
+            },
+            "x-enum-descriptions": [
+                "complained their program/diet was late or never arrived",
+                "concerned about cost, asked for discount/installments",
+                "complained support/coach was slow or unhelpful",
+                "app bugs, upload/playback errors, payment gateway errors",
+                "injury, illness, or personal-life reason unrelated to the product",
+                "no complaint at all, reads as simply gone quiet",
+                "messages exist but give no clear signal either way",
+                "customer has never sent a single chat/ticket message"
+            ],
+            "x-enum-varnames": [
+                "ProgramDelay",
+                "Price",
+                "SupportQuality",
+                "TechnicalIssue",
+                "HealthPersonal",
+                "LostInterest",
+                "Unclear",
+                "NoMessages"
+            ]
+        },
+        "centropy-affilate_internal_domain_complaint.DelayedProgramComplainer": {
+            "type": "object",
+            "properties": {
+                "complaintAt": {
+                    "type": "string"
+                },
+                "complaintExcerpt": {
+                    "type": "string"
+                },
+                "completedOrdersBefore": {
+                    "type": "integer"
+                },
+                "externalUserID": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "centropy-affilate_internal_domain_customer.Customer": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "externalUserID": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "lastSyncedAt": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "registeredAt": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "centropy-affilate_internal_domain_renewal.OverdueCustomer": {
+            "type": "object",
+            "properties": {
+                "completedOrdersTotal": {
+                    "type": "integer"
+                },
+                "daysSinceLastProgram": {
+                    "type": "integer"
+                },
+                "externalUserID": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "lastProgramAt": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "centropy-affilate_internal_domain_segment.Count": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "segment": {
+                    "$ref": "#/definitions/centropy-affilate_internal_domain_segment.Segment"
+                }
+            }
+        },
+        "centropy-affilate_internal_domain_segment.Customer": {
+            "type": "object",
+            "properties": {
+                "completedOrders": {
+                    "type": "integer"
+                },
+                "externalUserID": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "centropy-affilate_internal_domain_segment.MonthlySignups": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "month": {
+                    "type": "string"
+                }
+            }
+        },
+        "centropy-affilate_internal_domain_segment.NonPurchaser": {
+            "type": "object",
+            "properties": {
+                "externalUserID": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "registeredAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "centropy-affilate_internal_domain_segment.Segment": {
+            "type": "string",
+            "enum": [
+                "NEWCOMER",
+                "COLD",
+                "HERO",
+                "AT_RISK",
+                "CHURNED",
+                "ONE_TIME"
+            ],
+            "x-enum-varnames": [
+                "Newcomer",
+                "Cold",
+                "Hero",
+                "AtRisk",
+                "Churned",
+                "OneTime"
+            ]
+        },
+        "centropy-affilate_internal_domain_segment.Summary": {
+            "type": "object",
+            "properties": {
+                "counts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/centropy-affilate_internal_domain_segment.Count"
+                    }
+                },
+                "totalCustomers": {
+                    "type": "integer"
+                }
+            }
+        },
+        "centropy-affilate_internal_interfaces_http_dto.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "centropy-affilate_internal_interfaces_http_dto.LoginRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 8
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Type \"Bearer\" followed by a space and the JWT from /auth/login.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

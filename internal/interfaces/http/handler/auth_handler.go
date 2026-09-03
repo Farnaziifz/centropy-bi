@@ -17,6 +17,17 @@ func NewAuthHandler(bus *cqrs.Bus) *AuthHandler {
 }
 
 // Login authenticates an admin/ops user and returns a bearer token.
+//
+//	@Summary		Admin login
+//	@Description	Authenticates an admin/ops user and returns a bearer token.
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			body	body		dto.LoginRequest	true	"credentials"
+//	@Success		200		{object}	authcmd.LoginResult
+//	@Failure		400		{object}	dto.ErrorResponse
+//	@Failure		401		{object}	dto.ErrorResponse
+//	@Router			/auth/login [post]
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	req, err := dto.DecodeAndValidate[dto.LoginRequest](r)
 	if err != nil {

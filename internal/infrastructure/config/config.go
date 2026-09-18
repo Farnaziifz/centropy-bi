@@ -20,7 +20,6 @@ type Config struct {
 	DB       DBConfig
 	AlefGym  AlefGymConfig
 	Redis    RedisConfig
-	Auth     AuthConfig
 	GapGPT   GapGPTConfig
 	Analysis AnalysisConfig
 }
@@ -56,11 +55,6 @@ type RedisConfig struct {
 	Addr     string
 	Password string
 	DB       int
-}
-
-type AuthConfig struct {
-	JWTSecret string
-	AccessTTL time.Duration
 }
 
 // GapGPTConfig is the OpenAI-compatible proxy used to classify why an
@@ -121,10 +115,6 @@ func Load() (*Config, error) {
 			Password: getEnv("REDIS_PASSWORD", ""),
 			DB:       getInt("REDIS_DB", 0),
 		},
-		Auth: AuthConfig{
-			JWTSecret: getEnv("JWT_SECRET", ""),
-			AccessTTL: getDuration("JWT_ACCESS_TTL", 8*time.Hour),
-		},
 		GapGPT: GapGPTConfig{
 			APIKey:  getEnv("GAPGPT_API_KEY", ""),
 			BaseURL: getEnv("GAPGPT_BASE_URL", "https://api.gapgpt.app/v1"),
@@ -137,15 +127,9 @@ func Load() (*Config, error) {
 	}
 
 	if cfg.Env == "production" {
-		if cfg.Auth.JWTSecret == "" {
-			return nil, fmt.Errorf("config: JWT_SECRET is required in production")
-		}
 		if cfg.AlefGym.DSN == "" {
 			return nil, fmt.Errorf("config: ALEFGYM_DATABASE_DSN is required")
 		}
-	}
-	if cfg.Auth.JWTSecret == "" {
-		cfg.Auth.JWTSecret = "dev-insecure-jwt-secret"
 	}
 
 	return cfg, nil

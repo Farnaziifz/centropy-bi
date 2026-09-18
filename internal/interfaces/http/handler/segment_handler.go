@@ -27,7 +27,6 @@ func NewSegmentHandler(bus *cqrs.Bus) *SegmentHandler {
 //	@Description	Six-segment breakdown (newcomer/cold/hero/at-risk/churned/one-time) plus total customer count.
 //	@Tags			segments
 //	@Produce		json
-//	@Security		BearerAuth
 //	@Success		200	{object}	segment.Summary
 //	@Failure		401	{object}	dto.ErrorResponse
 //	@Router			/admin/segments [get]
@@ -49,7 +48,6 @@ func (h *SegmentHandler) Summary(w http.ResponseWriter, r *http.Request) {
 //	@Description	Every registered customer who has never completed a single order.
 //	@Tags			segments
 //	@Produce		json
-//	@Security		BearerAuth
 //	@Success		200	{array}		segment.NonPurchaser
 //	@Failure		401	{object}	dto.ErrorResponse
 //	@Router			/admin/segments/non-purchasers [get]
@@ -72,7 +70,6 @@ func (h *SegmentHandler) ListNonPurchasers(w http.ResponseWriter, r *http.Reques
 //	@Description	Per signup month, how many of that month's registrants still have zero completed orders today.
 //	@Tags			segments
 //	@Produce		json
-//	@Security		BearerAuth
 //	@Success		200	{array}		segment.MonthlySignups
 //	@Failure		401	{object}	dto.ErrorResponse
 //	@Router			/admin/segments/non-purchasers/monthly [get]
@@ -93,7 +90,6 @@ func (h *SegmentHandler) MonthlyNonPurchaserSignups(w http.ResponseWriter, r *ht
 //	@Description	Every customer currently in one segment.
 //	@Tags			segments
 //	@Produce		json
-//	@Security		BearerAuth
 //	@Param			segment	path		string	true	"segment name (newcomer/cold/hero/at-risk/churned/one-time)"
 //	@Success		200		{array}		segment.Customer
 //	@Failure		401		{object}	dto.ErrorResponse

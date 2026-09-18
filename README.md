@@ -1,15 +1,19 @@
 # centropy-affilate
 
 Backend for سنتروپی's customer management / loyalty-club system. It owns a
-small database of its own (admin logins, a synced customer directory) and
-reads the AlefGym production database read-only for everything about
-purchase behavior — orders, course expiry — so it can classify every
-customer into one of the six segments defined in `loyalty-club-roadmap.html`
-without duplicating AlefGym's data model.
+small database of its own (a synced customer directory) and reads the
+AlefGym production database read-only for everything about purchase
+behavior — orders, course expiry — so it can classify every customer into
+one of the six segments defined in `loyalty-club-roadmap.html` without
+duplicating AlefGym's data model.
 
 Architecture mirrors `findra/backend`: DDD-ish domain packages, a
 generics-based in-process CQRS bus (`pkg/cqrs`), ent for this service's own
-Postgres, chi for HTTP, JWT for admin auth.
+Postgres, chi for HTTP.
+
+No auth of its own — every route is open. It's an internal admin API meant
+to sit only on `external-network` behind other trusted services (the admin
+panel), never exposed on a public port.
 
 ## What's implemented (v1)
 
@@ -25,8 +29,6 @@ This is phases 0–1 of the roadmap, end to end:
   of the AlefGym user directory into a local table, so future loyalty
   features (points, referrals — not built yet) have a local row to attach
   state to.
-- **Admin auth**: email/password + JWT, since this is an internal ops tool,
-  not a customer-facing surface (that stays in AlefGym).
 - **Non-purchasers & delayed-program complainers** (`internal/domain/complaint`):
   who registered and never bought, by month; and who explicitly complained
   about a late program (keyword search over their own chat/tickets) and
@@ -64,35 +66,28 @@ make generate    # generates ent code from ent/schema (first run only)
 make run
 ```
 
-On first boot, if `ADMIN_SEED_EMAIL`/`ADMIN_SEED_PASSWORD` are set and no
-admin exists yet, one is created so there's a way to get the first token.
-
 ```bash
-curl -X POST localhost:8090/api/v1/auth/login \
-  -H 'content-type: application/json' \
-  -d '{"email":"admin@centropy.ir","password":"changeme123"}'
-
-curl localhost:8090/api/v1/admin/segments \
-  -H "authorization: Bearer <token>"
+curl localhost:8090/api/v1/admin/segments
 ```
 
 ## API
 
-| Method | Path                                    | Auth  |
-|--------|------------------------------------------|-------|
-| GET    | `/healthz`                                | none  |
-| POST   | `/api/v1/auth/login`                      | none  |
-| GET    | `/api/v1/admin/segments`                  | admin |
-| GET    | `/api/v1/admin/segments/{segment}/customers` | admin |
-| GET    | `/api/v1/admin/customers`                 | admin |
-| POST   | `/api/v1/admin/customers/sync`            | admin |
-| GET    | `/api/v1/admin/segments/non-purchasers`   | admin |
-| GET    | `/api/v1/admin/segments/non-purchasers/monthly` | admin |
-| GET    | `/api/v1/admin/complaints/delayed-program` | admin |
-| GET    | `/api/v1/admin/complaints/delayed-program/verified` | admin |
-| POST   | `/api/v1/admin/complaints/delayed-program/verify?limit=5` | admin |
-| GET    | `/api/v1/admin/renewals/overdue?days=50`  | admin |
-| GET    | `/api/v1/admin/analysis/overdue?days=50`  | admin |
-| POST   | `/api/v1/admin/analysis/run?limit=5`      | admin |
+No route requires auth — see the "No auth of its own" note above.
+
+| Method | Path                                    |
+|--------|------------------------------------------|
+| GET    | `/healthz`                                |
+| GET    | `/api/v1/admin/segments`                  |
+| GET    | `/api/v1/admin/segments/{segment}/customers` |
+| GET    | `/api/v1/admin/customers`                 |
+| POST   | `/api/v1/admin/customers/sync`            |
+| GET    | `/api/v1/admin/segments/non-purchasers`   |
+| GET    | `/api/v1/admin/segments/non-purchasers/monthly` |
+| GET    | `/api/v1/admin/complaints/delayed-program` |
+| GET    | `/api/v1/admin/complaints/delayed-program/verified` |
+| POST   | `/api/v1/admin/complaints/delayed-program/verify?limit=5` |
+| GET    | `/api/v1/admin/renewals/overdue?days=50`  |
+| GET    | `/api/v1/admin/analysis/overdue?days=50`  |
+| POST   | `/api/v1/admin/analysis/run?limit=5`      |
 
 `{segment}` is one of `NEWCOMER`, `COLD`, `HERO`, `AT_RISK`, `CHURNED`, `ONE_TIME`.

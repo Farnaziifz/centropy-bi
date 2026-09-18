@@ -13,12 +13,8 @@
 //
 //	@title			Centropy Affiliate Admin API
 //	@version		1.0
-//	@description	Admin API for the AlefGym loyalty-club dashboard: customer segmentation, complaint verification, renewal tracking, and AI-assisted analysis.
+//	@description	Admin API for the AlefGym loyalty-club dashboard: customer segmentation, complaint verification, renewal tracking, and AI-assisted analysis. Unauthenticated — every route trusts external-network placement (server-side only, never exposed publicly).
 //	@BasePath		/api/v1
-//	@securityDefinitions.apikey	BearerAuth
-//	@in							header
-//	@name						Authorization
-//	@description				Type "Bearer" followed by a space and the JWT from /auth/login.
 package main
 
 import (
@@ -33,7 +29,6 @@ import (
 
 	analysiscmd "centropy-affilate/internal/application/analysis/command"
 	analysisquery "centropy-affilate/internal/application/analysis/query"
-	authcmd "centropy-affilate/internal/application/auth/command"
 	complaintcmd "centropy-affilate/internal/application/complaint/command"
 	complaintquery "centropy-affilate/internal/application/complaint/query"
 	customercmd "centropy-affilate/internal/application/customer/command"
@@ -45,7 +40,6 @@ import (
 	"centropy-affilate/internal/domain/renewal"
 	"centropy-affilate/internal/domain/segment"
 	"centropy-affilate/internal/infrastructure/alefgym"
-	infraauth "centropy-affilate/internal/infrastructure/auth"
 	"centropy-affilate/internal/infrastructure/cache"
 	"centropy-affilate/internal/infrastructure/config"
 	"centropy-affilate/internal/infrastructure/gapgpt"
@@ -80,10 +74,6 @@ func run() error {
 		cancel()
 		return err
 	}
-	if err := persistence.SeedDefaultAdmin(ctx, entClient, os.Getenv("ADMIN_SEED_EMAIL"), os.Getenv("ADMIN_SEED_PASSWORD")); err != nil {
-		cancel()
-		return err
-	}
 	cancel()
 
 	alefgymDB, err := alefgym.NewClient(cfg.AlefGym.DSN)
@@ -102,7 +92,6 @@ func run() error {
 	pingCancel()
 
 	// --- repositories & adapters -------------------------------------------------
-	adminUserRepo := persistence.NewAdminUserRepository(entClient)
 	customerRepo := persistence.NewCustomerRepository(entClient)
 	customerSource := alefgym.NewCustomerSource(alefgymDB, cfg.AlefGym.ExcludedUserIDs)
 	segmentRepo := alefgym.NewSegmentRepository(alefgymDB, cfg.AlefGym.ExcludedUserIDs, log)
@@ -113,13 +102,8 @@ func run() error {
 	verificationRepo := persistence.NewComplaintVerificationRepository(entClient)
 	gapgptClient := gapgpt.NewClient(cfg.GapGPT.BaseURL, cfg.GapGPT.APIKey, cfg.GapGPT.Model)
 
-	jwtService := infraauth.NewJWTService(cfg.Auth.JWTSecret, cfg.Auth.AccessTTL)
-
 	// --- CQRS bus & handler registration ----------------------------------------
 	bus := cqrs.NewBus()
-
-	loginHandler := authcmd.NewLoginHandler(adminUserRepo, jwtService, infraauth.VerifyPassword)
-	cqrs.RegisterCommand[authcmd.LoginCommand, authcmd.LoginResult](bus, loginHandler.Handle)
 
 	syncCustomersHandler := customercmd.NewSyncCustomersHandler(customerSource, customerRepo)
 	cqrs.RegisterCommand[customercmd.SyncCustomersCommand, customercmd.SyncCustomersResult](bus, syncCustomersHandler.Handle)
@@ -201,7 +185,6 @@ func run() error {
 	router := transporthttp.NewRouter(transporthttp.Deps{
 		Bus:            bus,
 		Logger:         log,
-		TokenParser:    jwtService,
 		AllowedOrigins: cfg.HTTP.AllowedOrigins,
 		Env:            cfg.Env,
 	})

@@ -36,13 +36,6 @@ definitions:
       phone:
         type: string
     type: object
-  centropy-affilate_internal_application_auth_command.LoginResult:
-    properties:
-      expiresAt:
-        type: string
-      token:
-        type: string
-    type: object
   centropy-affilate_internal_application_complaint_command.VerifyDelayedComplaintsResult:
     properties:
       candidates:
@@ -243,21 +236,12 @@ definitions:
       error:
         type: string
     type: object
-  centropy-affilate_internal_interfaces_http_dto.LoginRequest:
-    properties:
-      email:
-        type: string
-      password:
-        minLength: 8
-        type: string
-    required:
-    - email
-    - password
-    type: object
 info:
   contact: {}
   description: 'Admin API for the AlefGym loyalty-club dashboard: customer segmentation,
-    complaint verification, renewal tracking, and AI-assisted analysis.'
+    complaint verification, renewal tracking, and AI-assisted analysis. Unauthenticated
+    — every route trusts external-network placement (server-side only, never exposed
+    publicly).'
   title: Centropy Affiliate Admin API
   version: "1.0"
 paths:
@@ -283,8 +267,6 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
-      security:
-      - BearerAuth: []
       summary: List overdue renewals with analysis
       tags:
       - analysis
@@ -308,8 +290,6 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
-      security:
-      - BearerAuth: []
       summary: Trigger analysis run
       tags:
       - analysis
@@ -330,8 +310,6 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
-      security:
-      - BearerAuth: []
       summary: List delayed-program complainers
       tags:
       - complaints
@@ -352,8 +330,6 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
-      security:
-      - BearerAuth: []
       summary: List verified complainers
       tags:
       - complaints
@@ -377,8 +353,6 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
-      security:
-      - BearerAuth: []
       summary: Trigger complaint verification
       tags:
       - complaints
@@ -398,8 +372,6 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
-      security:
-      - BearerAuth: []
       summary: List customers
       tags:
       - customers
@@ -417,8 +389,6 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
-      security:
-      - BearerAuth: []
       summary: Sync customers from AlefGym
       tags:
       - customers
@@ -444,8 +414,6 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
-      security:
-      - BearerAuth: []
       summary: List overdue renewals
       tags:
       - renewals
@@ -464,8 +432,6 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
-      security:
-      - BearerAuth: []
       summary: Segment summary
       tags:
       - segments
@@ -491,8 +457,6 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
-      security:
-      - BearerAuth: []
       summary: List customers in a segment
       tags:
       - segments
@@ -512,8 +476,6 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
-      security:
-      - BearerAuth: []
       summary: List non-purchasers
       tags:
       - segments
@@ -534,41 +496,9 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
-      security:
-      - BearerAuth: []
       summary: Monthly non-purchaser signups
       tags:
       - segments
-  /auth/login:
-    post:
-      consumes:
-      - application/json
-      description: Authenticates an admin/ops user and returns a bearer token.
-      parameters:
-      - description: credentials
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.LoginRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/centropy-affilate_internal_application_auth_command.LoginResult'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse'
-      summary: Admin login
-      tags:
-      - auth
   /healthz:
     get:
       produces:
@@ -583,10 +513,4 @@ paths:
       summary: Liveness probe
       tags:
       - health
-securityDefinitions:
-  BearerAuth:
-    description: Type "Bearer" followed by a space and the JWT from /auth/login.
-    in: header
-    name: Authorization
-    type: apiKey
 swagger: "2.0"

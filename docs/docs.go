@@ -17,11 +17,6 @@ const docTemplate = `{
     "paths": {
         "/admin/analysis/overdue": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "Overdue-renewal list with whatever AI verdict exists for each customer so far.",
                 "produces": [
                     "application/json"
@@ -59,11 +54,6 @@ const docTemplate = `{
         },
         "/admin/analysis/run": {
             "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "Manually triggers a small, bounded analysis batch (default 5, max 50).",
                 "produces": [
                     "application/json"
@@ -98,11 +88,6 @@ const docTemplate = `{
         },
         "/admin/complaints/delayed-program": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "Customers who complained about a late program and have bought nothing since.",
                 "produces": [
                     "application/json"
@@ -132,11 +117,6 @@ const docTemplate = `{
         },
         "/admin/complaints/delayed-program/verified": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "Delayed-program complaint list with GapGPT's genuine/false-positive verdict, where available.",
                 "produces": [
                     "application/json"
@@ -166,11 +146,6 @@ const docTemplate = `{
         },
         "/admin/complaints/delayed-program/verify": {
             "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "Manually triggers a small, bounded verification batch (default 5, max 20).",
                 "produces": [
                     "application/json"
@@ -205,11 +180,6 @@ const docTemplate = `{
         },
         "/admin/customers": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "Returns the locally synced customer directory.",
                 "produces": [
                     "application/json"
@@ -239,11 +209,6 @@ const docTemplate = `{
         },
         "/admin/customers/sync": {
             "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "Pulls the full AlefGym user directory into the local Customer table.",
                 "produces": [
                     "application/json"
@@ -270,11 +235,6 @@ const docTemplate = `{
         },
         "/admin/renewals/overdue": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "Customers whose last delivered program is older than the given days, with zero completed orders since.",
                 "produces": [
                     "application/json"
@@ -312,11 +272,6 @@ const docTemplate = `{
         },
         "/admin/segments": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "Six-segment breakdown (newcomer/cold/hero/at-risk/churned/one-time) plus total customer count.",
                 "produces": [
                     "application/json"
@@ -343,11 +298,6 @@ const docTemplate = `{
         },
         "/admin/segments/non-purchasers": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "Every registered customer who has never completed a single order.",
                 "produces": [
                     "application/json"
@@ -377,11 +327,6 @@ const docTemplate = `{
         },
         "/admin/segments/non-purchasers/monthly": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "Per signup month, how many of that month's registrants still have zero completed orders today.",
                 "produces": [
                     "application/json"
@@ -411,11 +356,6 @@ const docTemplate = `{
         },
         "/admin/segments/{segment}/customers": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "Every customer currently in one segment.",
                 "produces": [
                     "application/json"
@@ -441,52 +381,6 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/centropy-affilate_internal_domain_segment.Customer"
                             }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/login": {
-            "post": {
-                "description": "Authenticates an admin/ops user and returns a bearer token.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "auth"
-                ],
-                "summary": "Admin login",
-                "parameters": [
-                    {
-                        "description": "credentials",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/centropy-affilate_internal_interfaces_http_dto.LoginRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/centropy-affilate_internal_application_auth_command.LoginResult"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/centropy-affilate_internal_interfaces_http_dto.ErrorResponse"
                         }
                     },
                     "401": {
@@ -573,17 +467,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "phone": {
-                    "type": "string"
-                }
-            }
-        },
-        "centropy-affilate_internal_application_auth_command.LoginResult": {
-            "type": "object",
-            "properties": {
-                "expiresAt": {
-                    "type": "string"
-                },
-                "token": {
                     "type": "string"
                 }
             }
@@ -874,30 +757,6 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
-        },
-        "centropy-affilate_internal_interfaces_http_dto.LoginRequest": {
-            "type": "object",
-            "required": [
-                "email",
-                "password"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string",
-                    "minLength": 8
-                }
-            }
-        }
-    },
-    "securityDefinitions": {
-        "BearerAuth": {
-            "description": "Type \"Bearer\" followed by a space and the JWT from /auth/login.",
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header"
         }
     }
 }`
@@ -909,7 +768,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "Centropy Affiliate Admin API",
-	Description:      "Admin API for the AlefGym loyalty-club dashboard: customer segmentation, complaint verification, renewal tracking, and AI-assisted analysis.",
+	Description:      "Admin API for the AlefGym loyalty-club dashboard: customer segmentation, complaint verification, renewal tracking, and AI-assisted analysis. Unauthenticated — every route trusts external-network placement (server-side only, never exposed publicly).",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

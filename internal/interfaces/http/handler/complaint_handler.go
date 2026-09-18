@@ -30,7 +30,6 @@ func NewComplaintHandler(bus *cqrs.Bus) *ComplaintHandler {
 //	@Description	Customers who complained about a late program and have bought nothing since.
 //	@Tags			complaints
 //	@Produce		json
-//	@Security		BearerAuth
 //	@Success		200	{array}		complaint.DelayedProgramComplainer
 //	@Failure		401	{object}	dto.ErrorResponse
 //	@Router			/admin/complaints/delayed-program [get]
@@ -52,7 +51,6 @@ func (h *ComplaintHandler) ListDelayedProgramComplainers(w http.ResponseWriter, 
 //	@Description	Delayed-program complaint list with GapGPT's genuine/false-positive verdict, where available.
 //	@Tags			complaints
 //	@Produce		json
-//	@Security		BearerAuth
 //	@Success		200	{array}		complaintquery.VerifiedComplainer
 //	@Failure		401	{object}	dto.ErrorResponse
 //	@Router			/admin/complaints/delayed-program/verified [get]
@@ -73,7 +71,6 @@ func (h *ComplaintHandler) ListVerified(w http.ResponseWriter, r *http.Request) 
 //	@Description	Manually triggers a small, bounded verification batch (default 5, max 20).
 //	@Tags			complaints
 //	@Produce		json
-//	@Security		BearerAuth
 //	@Param			limit	query		int	false	"batch size, capped at 20"
 //	@Success		200		{object}	complaintcmd.VerifyDelayedComplaintsResult
 //	@Failure		401		{object}	dto.ErrorResponse

@@ -32,7 +32,6 @@ func NewAnalysisHandler(bus *cqrs.Bus) *AnalysisHandler {
 //	@Description	Overdue-renewal list with whatever AI verdict exists for each customer so far.
 //	@Tags			analysis
 //	@Produce		json
-//	@Security		BearerAuth
 //	@Param			days	query		int	false	"minimum days overdue (default 50)"
 //	@Success		200		{array}		analysisquery.OverdueWithAnalysis
 //	@Failure		401		{object}	dto.ErrorResponse
@@ -63,7 +62,6 @@ func (h *AnalysisHandler) ListOverdue(w http.ResponseWriter, r *http.Request) {
 //	@Description	Manually triggers a small, bounded analysis batch (default 5, max 50).
 //	@Tags			analysis
 //	@Produce		json
-//	@Security		BearerAuth
 //	@Param			limit	query		int	false	"batch size, capped at 50"
 //	@Success		200		{object}	analysiscmd.RunDailyAnalysisResult
 //	@Failure		401		{object}	dto.ErrorResponse

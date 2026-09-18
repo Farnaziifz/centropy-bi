@@ -19,7 +19,6 @@ import (
 type Deps struct {
 	Bus            *cqrs.Bus
 	Logger         *slog.Logger
-	TokenParser    appmiddleware.TokenParser
 	AllowedOrigins []string
 	Env            string
 }
@@ -47,7 +46,6 @@ func NewRouter(deps Deps) http.Handler {
 	r.Get("/healthz", handler.Health)
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
 
-	authHandler := handler.NewAuthHandler(deps.Bus)
 	segmentHandler := handler.NewSegmentHandler(deps.Bus)
 	customerHandler := handler.NewCustomerHandler(deps.Bus)
 	complaintHandler := handler.NewComplaintHandler(deps.Bus)
@@ -55,10 +53,7 @@ func NewRouter(deps Deps) http.Handler {
 	analysisHandler := handler.NewAnalysisHandler(deps.Bus)
 
 	r.Route("/api/v1", func(r chi.Router) {
-		r.Post("/auth/login", authHandler.Login)
-
 		r.Group(func(r chi.Router) {
-			r.Use(appmiddleware.RequireAuth(deps.TokenParser))
 			r.Use(chimiddleware.Timeout(30 * time.Second))
 
 			r.Route("/admin/segments", func(r chi.Router) {
@@ -91,7 +86,6 @@ func NewRouter(deps Deps) http.Handler {
 		// sequential GapGPT calls in one request (a few seconds each), so
 		// these need a much longer budget than every other route.
 		r.Group(func(r chi.Router) {
-			r.Use(appmiddleware.RequireAuth(deps.TokenParser))
 			r.Use(chimiddleware.Timeout(4*time.Minute + 30*time.Second))
 
 			r.Post("/admin/complaints/delayed-program/verify", complaintHandler.Verify)

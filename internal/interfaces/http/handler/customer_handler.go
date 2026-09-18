@@ -25,7 +25,6 @@ func NewCustomerHandler(bus *cqrs.Bus) *CustomerHandler {
 //	@Description	Pulls the full AlefGym user directory into the local Customer table.
 //	@Tags			customers
 //	@Produce		json
-//	@Security		BearerAuth
 //	@Success		200	{object}	customercmd.SyncCustomersResult
 //	@Failure		401	{object}	dto.ErrorResponse
 //	@Router			/admin/customers/sync [post]
@@ -46,7 +45,6 @@ func (h *CustomerHandler) Sync(w http.ResponseWriter, r *http.Request) {
 //	@Description	Returns the locally synced customer directory.
 //	@Tags			customers
 //	@Produce		json
-//	@Security		BearerAuth
 //	@Success		200	{array}		customer.Customer
 //	@Failure		401	{object}	dto.ErrorResponse
 //	@Router			/admin/customers [get]

@@ -25,7 +25,6 @@ func NewRenewalHandler(bus *cqrs.Bus) *RenewalHandler {
 //	@Description	Customers whose last delivered program is older than the given days, with zero completed orders since.
 //	@Tags			renewals
 //	@Produce		json
-//	@Security		BearerAuth
 //	@Param			days	query		int	false	"minimum days overdue (default 50)"
 //	@Success		200		{array}		renewal.OverdueCustomer
 //	@Failure		401		{object}	dto.ErrorResponse

@@ -28,8 +28,6 @@ services:
   api:
     build: .
     depends_on:
-      postgres:
-        condition: service_healthy
       redis:
         condition: service_healthy
     ports:
@@ -37,13 +35,23 @@ services:
     environment:
       APP_ENV: development
       HTTP_PORT: 8090
-      DATABASE_URL: postgres://centropy_affilate:centropy_affilate@postgres:5432/centropy_affilate?sslmode=disable
+      # Own data now lives on the shared app-database postgres (same
+      # container alefgym-backend-core uses), db bi-centropy — not the
+      # local postgres service in this stack.
+      DATABASE_URL: ${DATABASE_URL}
       REDIS_ADDR: redis:6379
       JWT_SECRET: dev-insecure-jwt-secret
       # Set the real value in the environment/secret store, not here — this
       # is a read-only credential onto a production database.
       ALEFGYM_DATABASE_DSN: ${ALEFGYM_DATABASE_DSN}
       CORS_ALLOWED_ORIGINS: http://localhost:5173
+    networks:
+      - default
+      - external-network
 
 volumes:
   centropy_affilate_postgres_data:
+
+networks:
+  external-network:
+    external: true

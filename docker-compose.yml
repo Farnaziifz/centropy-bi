@@ -42,7 +42,7 @@ services:
       JWT_SECRET: dev-insecure-jwt-secret
       # Set the real value in the environment/secret store, not here — this
       # is a read-only credential onto a production database.
-      ALEFGYM_DATABASE_DSN: ""
+      ALEFGYM_DATABASE_DSN: ${ALEFGYM_DATABASE_DSN}
       CORS_ALLOWED_ORIGINS: http://localhost:5173
 
 volumes:

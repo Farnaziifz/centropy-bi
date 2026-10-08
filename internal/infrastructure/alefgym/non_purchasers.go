@@ -109,7 +109,7 @@ func (r *SegmentRepository) MonthlyNonPurchaserSignups(ctx context.Context) ([]s
 
 	out := make([]segment.MonthlySignups, len(keys))
 	for i, k := range keys {
-		out[i] = segment.MonthlySignups{Month: labels[k], Count: counts[k]}
+		out[i] = segment.MonthlySignups{Key: k, Month: labels[k], Count: counts[k]}
 	}
 	return out, nil
 }

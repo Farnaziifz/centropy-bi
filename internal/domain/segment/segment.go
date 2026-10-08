@@ -77,6 +77,7 @@ type NonPurchaser struct {
 // MonthlySignups pairs a signup month ("2026-08") with how many of that
 // month's registrants still have zero completed orders as of now.
 type MonthlySignups struct {
+	Key   string // Jalali "YYYY-MM", stable for matching rows to a bucket
 	Month string
 	Count int
 }
